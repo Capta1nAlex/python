@@ -21,11 +21,7 @@ def create_pie_chart(letter_counts):
     plt.title('Letter Distribution')
     plt.show()
 
-def main():
-    filename = input("Enter the name of the input file: ")
-    letter_counts = count_latin_letters(filename)
-    if letter_counts:
-        create_pie_chart(letter_counts)
-
-if __name__ == "__main__":
-    main()
+filename = input("Enter the name of the input file: ")
+letter_counts = count_latin_letters(filename)
+if letter_counts:
+    create_pie_chart(letter_counts)
