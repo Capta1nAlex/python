@@ -11,6 +11,8 @@ wheatDF = pd.read_csv('Wheat.csv')
 farmingCompanies=farmingCompanies.dropna()
 fedfundsDF=fedfundsDF.dropna()
 wheatDF=wheatDF.dropna()
+corDF=pd.DataFrame()
+print(wheatDF)
 def filter_and_drop(df, column_to_filter):
     # Convert the date column to datetime
     df[column_to_filter] = pd.to_datetime(df[column_to_filter])
@@ -21,6 +23,12 @@ def filter_and_drop(df, column_to_filter):
     columns_to_keep = [column_to_filter] + [col for col in df.columns if col != column_to_filter and not any((df[column_to_filter].dt.year < 2004) | (df[column_to_filter].dt.year > 2023))]
     # Create a new DataFrame with only the columns to keep
     return df[columns_to_keep]
+
+#adding element to correlation matrix via function + resetting index and avoiding duplicated code
+def add_to_cor(df, tempColumn, name):
+    tempColumn = tempColumn.reset_index(drop=True)
+    df[name]=tempColumn
+
 
 
 # Apply the function to both DataFrames
@@ -41,28 +49,12 @@ for name in unique_names:
     wheatDF = wheatDF[wheatDF['Date'].dt.month.isin(valid_months)]
     currentCompany=farmingCompanies[farmingCompanies['ticker'] == name]
     plt.figure(figsize=(8, 6))  # Adjust the figure size for better readability
-    
-    corDF=currentCompany[currentCompany['item_name'] == "freeCashFlow"]
-    corDF = corDF.reset_index(drop=True)
     # Getting needed elements
-    tempColumn=currentCompany[currentCompany['item_name'] == "freeCashFlow"]
-    tempColumn = tempColumn.reset_index(drop=True)
-    corDF['freeCashFlow']=tempColumn['value']
-
-    tempColumn=currentCompany[currentCompany['item_name']== 'netIncome']
-    tempColumn = tempColumn.reset_index(drop=True)
-    corDF['netIncome']=tempColumn['value']
-
-    tempColumn=currentCompany[currentCompany['item_name']== 'totalRevenue']
-    tempColumn = tempColumn.reset_index(drop=True)
-    corDF['totalRevenue']=tempColumn['value']
-    
-    tempColumn=fedfundsDF['FEDFUNDS']
-    tempColumn = tempColumn.reset_index(drop=True)
-    corDF['FEDFUNDS']=tempColumn
-    tempColumn=wheatDF['Volume']
-    tempColumn = tempColumn.reset_index(drop=True)
-    corDF['Volume']=tempColumn
+    add_to_cor(corDF, currentCompany[currentCompany['item_name']== 'freeCashFlow']['value'] , 'freeCashFlow')
+    add_to_cor(corDF, currentCompany[currentCompany['item_name']== 'netIncome']['value'] , 'netIncome')
+    add_to_cor(corDF, currentCompany[currentCompany['item_name']== 'totalRevenue']['value'] , 'totalRevenue')
+    add_to_cor(corDF, fedfundsDF['FEDFUNDS'], 'FEDFUNDS')
+    add_to_cor(corDF, wheatDF['Volume'], 'Volume')
     #creating correlation matrix + displaying/saving it
     ratio = corDF[['freeCashFlow', 'netIncome', 'totalRevenue', 'FEDFUNDS', 'Volume']]
     corr_matrix = ratio.corr()
