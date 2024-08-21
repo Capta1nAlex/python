@@ -37,9 +37,10 @@ revenue_df = revenue_df.sort_values('interval_date')
 tickers = revenue_df['ticker'].unique()
 colors = cm.get_cmap('tab20', len(tickers))
 plt.figure(figsize=(14, 8))
-for i, ticker in enumerate(tickers):
+for i, ticker in enumerate(tickers[:5]):
     company_data = revenue_df[revenue_df['ticker'] == ticker]
-    plt.plot(company_data['interval_date'], company_data['value'], 
+    company_data['value_percentage'] = (company_data['value'] / company_data['value'].max()) * 100
+    plt.plot(company_data['interval_date'], company_data['value_percentage'], 
              marker='o', linestyle='-', color=colors(i), label=ticker)
 plt.title('Revenue Over Time for Multiple Companies')
 plt.xlabel('Date')
