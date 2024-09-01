@@ -58,6 +58,7 @@ plt.ylabel('Value%')
 plt.grid(True)
 plt.legend(title='Ticker', bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
+plt.savefig('analysis/Revenue Multiple Companies.png')
 plt.show()
 ########
 
